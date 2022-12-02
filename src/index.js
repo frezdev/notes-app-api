@@ -14,19 +14,19 @@ let notes = [
     id: 1,
     title: 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit',
     body: 'quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto',
-    date: '2022-12-01T15:06:50.220Z'
+    date: new Date().toUTCString()
   },
   {
     id: 2,
     title: 'qui est esse',
     body: 'est rerum tempore vitae\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\nqui aperiam non debitis possimus qui neque nisi nulla',
-    date: '2022-12-01T16:06:50.220Z'
+    date: new Date().toUTCString()
   },
   {
     id: 3,
     title: 'ea molestias quasi exercitationem repellat qui ipsa sit aut',
     body: 'et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut ad\nvoluptatem doloribus vel accusantium quis pariatur\nmolestiae porro eius odio et labore et velit aut',
-    date: '2022-12-01T18:08:50.220Z'
+    date: new Date().toUTCString()
   }
 ];
 
@@ -59,7 +59,7 @@ app.delete('/api/notes/:id', (request, response) => {
 app.post('/api/notes', (request, response) => {
   const note = request.body;
 
-  if (!note || !note.body) {
+  if (!note || !note.body || typeof note.body !== 'string') {
     return response.status(400).json({
       error: 'note.content is missing'
     });
@@ -68,11 +68,12 @@ app.post('/api/notes', (request, response) => {
   const ids = notes.map(note => note.id);
   const maxId = Math.max(...ids);
 
+  console.log(new Date().toUTCString());
   const newNote = {
     id: maxId + 1,
     title: note.title,
     body: note.body,
-    date: new Date().toISOString()
+    date: new Date().toUTCString()
   };
   notes = [...notes, newNote];
   response.status(201).json(newNote);
