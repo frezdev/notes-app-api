@@ -70,7 +70,7 @@ app.post('/api/notes', (request, response) => {
 
   console.log(new Date().toUTCString());
   const newNote = {
-    id: maxId + 1,
+    id: notes.length > 0 ? maxId + 1 : 1,
     title: note.title,
     body: note.body,
     date: new Date().toUTCString()
