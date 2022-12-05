@@ -2,7 +2,7 @@ const { connect } = require('mongoose');
 const config = require('../config');
 
 
-connect(config.MONGO_URI)
+connect(config.MONGO_URI, {useNewUrlParser: true})
   .then(() => console.log('connected'))
   .catch(err => console.error(err));
 
