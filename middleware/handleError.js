@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-const unknown = (error, _request, response, _next ) => {
+module.exports = (error, _request, response, _next ) => {
   console.error(error.name);
 
   if (error.name === 'CastError') {
@@ -11,4 +11,3 @@ const unknown = (error, _request, response, _next ) => {
   }
 };
 
-module.exports = unknown;

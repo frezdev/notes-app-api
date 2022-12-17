@@ -1,0 +1,7 @@
+PUT http://localhost:3001/api/notes/639cc49e4b4a621e547ac988
+Content-Type: application/json
+
+{
+  "title": "Actualizado",
+  "body": "Edité el titulo de esta nota"
+}

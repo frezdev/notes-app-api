@@ -2,10 +2,14 @@ const { connect } = require('mongoose');
 const config = require('../config');
 
 
-connect(config.MONGO_URI, {useNewUrlParser: true})
-  .then(() => console.log('connected'))
-  .catch(err => console.error(err));
-
+(async () => {
+  const resp = await connect(config.MONGO_URI, { useNewUrlParser: true });
+  try {
+    console.log(`MongoDB Connected: ${resp.connection.host}`);
+  } catch (error) {
+    console.error(error);
+  }
+})();
 
 // Note.find({}).then(result => {
 //   console.log(result);
