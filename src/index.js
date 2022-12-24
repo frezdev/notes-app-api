@@ -1,7 +1,5 @@
 require('./mongo');
 
-const Sentry = require('@sentry/node');
-const Tracing = require('@sentry/tracing');
 const express = require('express');
 const cors = require('cors');
 const logger = require('../middleware/loggerMiddleware.js');
@@ -15,37 +13,14 @@ app.use(cors());
 app.use(express.json());
 app.use(logger);
 
-Sentry.init({
-  dsn: 'https://b08d1cce3e0149d9bb7b2cec6c3ad63f@o4504341181693952.ingest.sentry.io/4504341192835072',
-  integrations: [
-    // enable HTTP calls tracing
-    new Sentry.Integrations.Http({ tracing: true }),
-    // enable Express.js middleware tracing
-    new Tracing.Integrations.Express({ app }),
-  ],
-
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-});
-
-// RequestHandler creates a separate execution context using domains, so that every
-// transaction/span/breadcrumb is attached to its own Hub instance
-app.use(Sentry.Handlers.requestHandler());
-// TracingHandler creates a trace for every incoming request
-app.use(Sentry.Handlers.tracingHandler());
-
 app.get('/', (request, response) => {
   response.send('<h1>NotesApp API</h1>');
 });
 
 // GET ALL NOTES
-app.get('/api/notes', (request, response) => {
-  Note.find({})
-    .then(notes => {
-      response.json(notes);
-    });
+app.get('/api/notes', async (request, response) => {
+  const notes = await Note.find({});
+  response.json(notes);
 });
 
 // GET A NOTE
@@ -53,11 +28,8 @@ app.get('/api/notes/:id', (request, response, next) => {
   const { id } = request.params;
   Note.findById(id)
     .then(note => {
-      if (note) {
-        response.json(note);
-      } else {
-        response.status(404).end();
-      }
+      if (note) return response.json(note);
+      response.status(404).end();
     }).catch(err => {
       next(err);
     });
@@ -75,26 +47,28 @@ app.put('/api/notes/:id', (request, response, next) => {
   Note.findByIdAndUpdate(id, updatedNote, { new: true })
     .then((updated) => {
       response.json(updated);
-      response.status(204).end();
+      response.status(200).end();
     }).catch(err => next(err));
 });
 
 // DELETE A NOTE
-app.delete('/api/notes/:id', (request, response, next) => {
+app.delete('/api/notes/:id', async (request, response, next) => {
   const { id } = request.params;
 
-  Note.findByIdAndDelete(id)
-    .then((deleted) => {
-      response.json(deleted);
-      response.status(204).end();
-    }).catch(err => next(err));
+  try {
+    const deleted = await Note.findByIdAndDelete(id);
+    response.status(204).end();
+    response.json(deleted);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // CREATE A NOTE
-app.post('/api/notes', (request, response) => {
+app.post('/api/notes', async (request, response, next) => {
   const note = request.body;
 
-  if (!note || !note.body || typeof note.body !== 'string') {
+  if (!note || !note.body || typeof note.body !== 'string' || !note.title) {
     return response.status(400).json({
       error: 'note.content is missing'
     });
@@ -106,13 +80,14 @@ app.post('/api/notes', (request, response) => {
     date: new Date()
   });
 
-  newNote.save()
-    .then(saveNote => {
-      response.status(201).json(saveNote);
-    });
+  try {
+    const saveNote = await newNote.save();
+    response.status(201).json(saveNote);
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.use(Sentry.Handlers.errorHandler());
 
 // NOT FOUND
 app.use(notFound);
@@ -122,6 +97,8 @@ app.use(handleError);
 
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = { app, server };

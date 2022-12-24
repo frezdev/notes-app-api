@@ -1,9 +1,13 @@
 const { connect } = require('mongoose');
-const config = require('../config');
+const {MONGO_URI, MONGO_URI_TEST, NODE_ENV} = require('../config');
 
+const connectionString = NODE_ENV === 'test'
+  ? MONGO_URI_TEST
+  : MONGO_URI;
 
 (async () => {
-  const resp = await connect(config.MONGO_URI, { useNewUrlParser: true });
+  console.log(connectionString);
+  const resp = await connect(connectionString, { useNewUrlParser: true });
   try {
     console.log(`MongoDB Connected: ${resp.connection.host}`);
   } catch (error) {
