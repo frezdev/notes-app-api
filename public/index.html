@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./styles.css">
+  <title>Document</title>
+</head>
+<body>
+  <header>
+    <h1>Notes</h1>
+    <a href="/api/notes" target="_blank">API</a>
+  </header>
+
+
+
+  <div id="root"></div>
+
+  <script>
+    const Note = ({title, body, date}) =>  {
+      const newDate = new Date(date).toDateString()
+      return (/*html*/`
+        <div class="note">
+          <h3 id="title">${title}</h3>
+          <p id="body">${body}</p>
+          <i id="date">${newDate}</i>
+        </div>
+      `)
+    }
+
+    fetch('./data.json')
+      .then(resp => resp.json())
+      .then(data => {
+        data.map(note => {
+          const article =
+            document.createRange().createContextualFragment(
+              Note(note)
+            )
+          const container = document.querySelector('#root')
+          container.append(article)
+        })
+      })
+  </script>
+</body>
+</html>

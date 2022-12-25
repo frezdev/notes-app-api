@@ -1,13 +1,16 @@
-// eslint-disable-next-line no-unused-vars
-module.exports = (error, _request, response, _next ) => {
-  console.error(error.name);
+const logger = require('../utils/logger.js');
+
+module.exports = (error, _request, response, next ) => {
+  logger.error(error.name);
 
   if (error.name === 'CastError') {
-    response.status(400).send({
-      error: 'No se encontro esta dirección :('
+    return response.status(400).send({
+      error: 'malformatted id'
     });
-  } else {
-    response.status(500).end();
+  } else if (error.name === 'ValidationError') {
+    return response.status(500).end();
   }
+
+  next(error);
 };
 

@@ -1,11 +1,11 @@
 const { connect } = require('mongoose');
-const {MONGO_URI, MONGO_URI_TEST, NODE_ENV} = require('../config');
+const {MONGO_URI, MONGO_URI_TEST, NODE_ENV} = require('../utils/config.js');
 
 const connectionString = NODE_ENV === 'test'
   ? MONGO_URI_TEST
   : MONGO_URI;
 
-(async () => {
+const mongoDbConnect = async () => {
   console.log(connectionString);
   const resp = await connect(connectionString, { useNewUrlParser: true });
   try {
@@ -13,7 +13,9 @@ const connectionString = NODE_ENV === 'test'
   } catch (error) {
     console.error(error);
   }
-})();
+};
+
+module.exports = mongoDbConnect;
 
 // Note.find({}).then(result => {
 //   console.log(result);

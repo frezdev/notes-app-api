@@ -1,4 +1,4 @@
-const { palindrome } = require('../utils/for_testing.js');
+const { palindrome } = require('../../utils/for_testing.js');
 
 describe.skip('Palindrome', () => {
   test('palindrome of carlos', () => {
