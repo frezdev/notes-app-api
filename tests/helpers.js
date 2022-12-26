@@ -29,8 +29,7 @@ const getAllTitlesFromNotes = async () => {
 
 const getUsers = async () => {
   const usersDB = await User.find({});
-  const usersAtStart = usersDB.map(user => user.toJSON());
-  return usersAtStart;
+  return usersDB.map(user => user.toJSON());
 };
 
 module.exports = {

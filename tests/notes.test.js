@@ -1,25 +1,20 @@
 const { mongoose } = require('mongoose');
-
 const { server } = require('../src/index.js');
+const Note = require('../src/models/Note.js');
+
 const {
   api,
   initialNotes,
+  getUsers,
   getAllTitlesFromNotes
 } = require('./helpers');
-const Note = require('../src/models/Note.js');
 
-//jest.setTimeout(5000);
+//jest.setTimeout(9000);
 
 
 beforeEach(async () => {
   await Note.deleteMany({});
 
-  // parallel
-  // const notesObject = initialNotes.map(note => new Note(note));
-  // const promises = notesObject.map(note => note.save);
-  // await Promise.all(promises);
-
-  // sequential
   for (const note of initialNotes) {
     const noteObject = new Note(note);
     await noteObject.save();
@@ -48,9 +43,12 @@ describe('GET notes', () => {
 
 describe('POST notes', () => {
   test('a valid note can be added', async () => {
+    const user = await getUsers();
+
     const newNote = {
       title: 'Creando otra nota',
       body: 'Este es un ejemplo de nota',
+      userId: user[0].id
     };
 
     await api

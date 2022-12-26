@@ -2,6 +2,7 @@ POST http://localhost:3001/api/notes
 Content-Type: application/json
 
 {
-  "title": "Nueva nota",
-  "body": "Esta es una nueva nota creada por mi"
+  "title": "Primera nota",
+  "body": "Esta nota me pertenece a mi",
+  "userId": "63a9179c911bebbfc8ee96d4"
 }

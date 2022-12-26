@@ -1,9 +1,13 @@
 const { connect } = require('mongoose');
-const {MONGO_URI, MONGO_URI_TEST, NODE_ENV} = require('../utils/config.js');
+const {MONGO_URI, MONGO_URI_TEST, NODE_ENV, MONGO_URI_DEV} = require('../utils/config.js');
 
-const connectionString = NODE_ENV === 'test'
-  ? MONGO_URI_TEST
-  : MONGO_URI;
+const modeUri = (nodeEnv) => {
+  if (nodeEnv === 'test') return MONGO_URI_TEST;
+  if (nodeEnv === 'development') return MONGO_URI_DEV;
+  return MONGO_URI;
+};
+
+const connectionString = modeUri(NODE_ENV);
 
 const mongoDbConnect = async () => {
   console.log(connectionString);

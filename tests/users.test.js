@@ -1,25 +1,29 @@
-const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const { server } = require('../src/index.js');
 const User = require('../src/models/User.js');
 const { api, getUsers } = require('./helpers');
 
-describe.only('Creating a new user', () => {
-  beforeEach(async () => {
-    await User.deleteMany({});
+//jest.setTimeout(9000);
 
-    const passwordHash = await bcrypt.hash('pswd', 10);
-    const user = new User({ username: 'gndx', passwordHash});
+beforeEach(async () => {
+  await User.deleteMany({});
 
-    await user.save();
-  });
+  const user = new User({
+    username: 'andcoder',
+    name: 'Andres',
+    lastname: 'Fontalvo',
+    passwordHash: 'contraseña'
+  },);
+  await user.save();
+});
 
+describe('Creating a new user', () => {
   test('works as expected creating a fresh username', async () => {
     const usersAtStart = await getUsers();
 
     const newUser = {
-      username: 'andcoder',
-      name: 'Carlos',
+      username: 'fabimona',
+      name: 'Fabiana',
       lastname: 'Fontalvo',
       password: 'Contraseña'
     };
@@ -44,8 +48,8 @@ describe.only('Creating a new user', () => {
     const newUser = {
       username: 'andcoder',
       name: 'Andres',
-      lastname: 'Garcia',
-      password: 'andrespassword'
+      lastname: 'Fontalvo',
+      password: 'Contraseña'
     };
 
     const result = await api
@@ -54,13 +58,14 @@ describe.only('Creating a new user', () => {
       .expect(400)
       .expect('Content-Type', /application\/json/);
 
-    expect(result.body.error.errors.username.message).toContain('`username` to be unique');
+    expect(result.body.errors.username.message).toContain('invalid username');
     const usersAtEnd = await getUsers();
     expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
 
-  afterAll(() => {
-    mongoose.connection.close();
-    server.close();
-  });
+});
+
+afterAll(() => {
+  mongoose.connection.close();
+  server.close();
 });
