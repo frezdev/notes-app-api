@@ -10,6 +10,23 @@ usersRouter.get('/', async (request, response) => {
   response.json(users);
 });
 
+usersRouter.get('/:id', async (request, response, next) => {
+  const { id } = request.params;
+
+  const user = await User.findById(id).populate('notes', {
+    title: 1,
+    body: 1,
+    date: 1
+  });
+
+  try {
+    if (user) return response.status(200).json(user);
+  } catch (error) {
+    response.status(404).end();
+    next(error);
+  }
+});
+
 usersRouter.post('/', async (request, response) => {
   const { body } = request;
   const { username, name, lastname, password } = body;
