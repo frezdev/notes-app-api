@@ -33,7 +33,7 @@ loginRouter.post('/', async (request, response) => {
       token,
     });
   } catch (error) {
-    response.status(500).send({message: "Ha ocurrido un error inesperado"})
+    response.status(500).send({message: "Ha ocurrido un error inesperado", error})
   }
 });
 
